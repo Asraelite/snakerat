@@ -7,7 +7,7 @@ SR.Entity = class Entity {
 		this.x = settings.pos.x;
 		this.y = settings.pos.y;
 
-		this.direction = [0, 0];
+		this.direction = false;
 		this.tailLength = 0;
 		this.tails = [];
 	}
@@ -17,7 +17,7 @@ SR.Entity = class Entity {
 			this.controller.control();
 
 		if (this.type == 'snake') {
-			if (!(this._walkCycle % 6)) {
+			if (!(this._walkCycle % 6) && this.direction) {
 				this.tails.push(this.posStr);
 				this.world.snakeTails.add(this.posStr);
 				this.x += this.direction[0];
@@ -38,7 +38,10 @@ SR.Entity = class Entity {
 		}
 
 		if (this.world.tileStr(this.posStr) == 'tail') {
-			this.die();
+			this.x -= this.direction[0] || 0;
+			this.y -= this.direction[1] || 0;
+			this.world.snakeTails.delete(this.tails.pop());
+			this.direction = false;
 		}
 
 		this._walkCycle++;
